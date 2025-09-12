@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { type } = require("os");
+//const { type } = require("Characters");
 
 const charactersSchema = new mongoose.Schema({
     name: { type: String, required: true},
@@ -18,8 +18,8 @@ const charactersSchema = new mongoose.Schema({
     }
 }, {
     timestamps: true,
-    collection: "peliculas"
+    collection: "films"
 })
 
-const Character = mongoose.model("characters", charactersSchema, "characters");
+const Character = mongoose.model("characters", charactersSchema);
 module.exports = Character;
