@@ -4,17 +4,18 @@ Platforms
 
 const getPlatform = async (req, res, next) => {
     try {
-        const platforms = await Platforms.find().populate("film");
+        const platforms = await Platforms.find().populate("movies");
         return res.status(200).json(platforms);
     } catch (error) {
-        return res.status(400).json("Error en la solicitud");
-    }
+        return res.status(400).json({error: error.message});
+        };
+    
 }
 
 const getPlatformById = async (req, res, next) => {
     try {
        const { id } = req.params;
-       const platforms = await Platforms.findById(id);
+       const platforms = await Platforms.findById(id).populate("movies");
        return res.status(200).json(platforms);
     } catch (error) {
         return res.status(400).json("Error en la solicitud id");
@@ -24,9 +25,7 @@ const getPlatformById = async (req, res, next) => {
 
 const postPlatform = async (req, res, next) => {
     try {
-        console.log("body recibido", req.body)
         const newPlatforms = new Platforms(req.body);
-        console.log(req.body);
         const platformsSaved = await newPlatforms.save();
         return res.status(201).json(platformsSaved);
     } catch (error) {
@@ -37,8 +36,24 @@ const postPlatform = async (req, res, next) => {
 const putPlatform = async (req, res, next) => {
     try {
         const { id } = req.params;
-        console.log("estoy pillando el id o no?");
-        const platformsUpdated = await Platforms.findByIdAndUpdate(id, req.body, {
+        const allPlatforms = await Platforms.findById(id);
+        
+        let newPlatforms = new Platforms(req.body);
+        newPlatforms = {
+            _id: id,
+            name: allPlatforms.name,
+            image: allPlatforms.image, 
+            movies: [...allPlatforms.movies]
+        }
+
+        /*if(req.body.movies && Array.isArray(req.body.movies)){
+        newPlatforms.movies = [...allPlatforms.movies, ...req.body.movies];
+        }*/
+        
+        newPlatforms._id = id;
+        newPlatforms.movies = [...allPlatforms.movies, ...req.body.movies];
+        
+        const platformsUpdated = await Platforms.findByIdAndUpdate(id, newPlatforms, {
             new: true,
         });
         return res.status(200).json(platformsUpdated);

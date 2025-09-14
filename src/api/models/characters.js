@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const charactersSchema = new mongoose.Schema({
     name: { type: String, required: true},
     image: { type: String, required: true},
-    film: {type: String, required: true}, 
+    movie: {type: String, required: true}, 
     category: {
         type: String, 
         required: true, 
@@ -18,8 +18,8 @@ const charactersSchema = new mongoose.Schema({
     }
 }, {
     timestamps: true,
-    collection: "films"
+    collection: "characters"
 })
 
-const Character = mongoose.model("characters", charactersSchema);
+const Character = mongoose.model("Character", charactersSchema);
 module.exports = Character;

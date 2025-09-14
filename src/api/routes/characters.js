@@ -1,16 +1,16 @@
 const express = require("express");
-const { getCharacters, getCharactersById, getCharactersByFilm, putCharacters, postCharacters, deleteCharacters } = require("../controllers/characters");
+const { getCharacters, getCharactersById, getCharactersByMovie, putCharacters, postCharacters, deleteCharacters } = require("../controllers/characters");
 
 getCharacters
 getCharactersById
-getCharactersByFilm
+getCharactersByMovie
 putCharacters
 postCharacters
 deleteCharacters
 
 const characterRouter = express.Router();
 
-characterRouter.get("/film/:film", getCharactersByFilm)
+characterRouter.get("/movie/:movie", getCharactersByMovie)
 characterRouter.get("/:id", getCharactersById);
 characterRouter.get("/", getCharacters);
 characterRouter.post("/", postCharacters);
