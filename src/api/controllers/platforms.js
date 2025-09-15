@@ -41,17 +41,17 @@ const putPlatform = async (req, res, next) => {
         let newPlatforms = new Platforms(req.body);
         newPlatforms = {
             _id: id,
-            name: allPlatforms.name,
-            image: allPlatforms.image, 
+            name: req.body.name || allPlatforms.name,
+            image: req.body.image || allPlatforms.image, 
             movies: [...allPlatforms.movies]
         }
 
-        /*if(req.body.movies && Array.isArray(req.body.movies)){
+        if(req.body.movies && Array.isArray(req.body.movies)){
         newPlatforms.movies = [...allPlatforms.movies, ...req.body.movies];
-        }*/
+        }
         
-        newPlatforms._id = id;
-        newPlatforms.movies = [...allPlatforms.movies, ...req.body.movies];
+       /* newPlatforms._id = id;
+        newPlatforms.movies = [...allPlatforms.movies, ...req.body.movies];*/
         
         const platformsUpdated = await Platforms.findByIdAndUpdate(id, newPlatforms, {
             new: true,
