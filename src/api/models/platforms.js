@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-//const { type } = require("Characters");
 
 const platformsSchema = new mongoose.Schema({
     name: { type: String, required: true},

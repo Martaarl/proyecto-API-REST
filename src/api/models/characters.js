@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-//const { type } = require("Characters");
 
 const charactersSchema = new mongoose.Schema({
     name: { type: String, required: true},

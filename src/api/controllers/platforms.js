@@ -49,10 +49,7 @@ const putPlatform = async (req, res, next) => {
         if(req.body.movies && Array.isArray(req.body.movies)){
         newPlatforms.movies = [...allPlatforms.movies, ...req.body.movies];
         }
-        
-       /* newPlatforms._id = id;
-        newPlatforms.movies = [...allPlatforms.movies, ...req.body.movies];*/
-        
+
         const platformsUpdated = await Platforms.findByIdAndUpdate(id, newPlatforms, {
             new: true,
         });
