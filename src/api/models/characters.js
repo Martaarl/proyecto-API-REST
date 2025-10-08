@@ -7,7 +7,7 @@ const charactersSchema = new mongoose.Schema({
     category: {
         type: String, 
         required: true, 
-        enum: ["horrorr",
+        enum: ["horror",
              "drama", 
              "comedy", 
              "action", 

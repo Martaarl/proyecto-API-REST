@@ -16,9 +16,14 @@ const getPlatformById = async (req, res, next) => {
     try {
        const { id } = req.params;
        const platforms = await Platforms.findById(id).populate("movies");
+
+        if(!platforms){
+            return res.status(400).json({error: "Platform not found"})
+        }
+
        return res.status(200).json(platforms);
     } catch (error) {
-        return res.status(400).json("Error en la solicitud id");
+        return res.status(400).json({error:error.message});
     }
 }
 
@@ -29,7 +34,7 @@ const postPlatform = async (req, res, next) => {
         const platformsSaved = await newPlatforms.save();
         return res.status(201).json(platformsSaved);
     } catch (error) {
-        return res.status(400).json("Error creando al personaje");
+        return res.status(400).json({error: error.message});
     }
 }
 
@@ -37,6 +42,10 @@ const putPlatform = async (req, res, next) => {
     try {
         const { id } = req.params;
         const allPlatforms = await Platforms.findById(id);
+
+        if (!allPlatforms) {
+            return res.status(400).json({error: "Platform not found"})
+        }
         
         let newPlatforms = new Platforms(req.body);
         newPlatforms = {
@@ -55,7 +64,7 @@ const putPlatform = async (req, res, next) => {
         });
         return res.status(200).json(platformsUpdated);
     } catch (error) {
-        return res.status(400).json("Error al actualizar al personaje");
+        return res.status(400).json({error: "error updating"});
     }
 }
 
@@ -66,7 +75,7 @@ const deletePlatform = async (req, res, next) => {
        const platformsDeleted = await Platforms.findByIdAndDelete(id);
        return res.status(200).json(platformsDeleted);
     } catch (error) {
-        return res.status(400).json("Error al eliminar al personaje")
+        return res.status(400).json({error: error.message})
     }
 }
 
