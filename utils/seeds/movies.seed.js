@@ -1,5 +1,5 @@
 require('dotenv').config();
-const characters = require("../../src/data/movies");
+const charactersData = require("../../src/data/charactersData");
 const mongoose = require("mongoose");
 const Character = require("../../src/api/models/characters");
 
@@ -8,14 +8,13 @@ const seedCharacters = async () => {
         console.log("Conectando a:", process.env.DB_URL);
         await mongoose.connect(process.env.DB_URL);
 
-        for (const char of characters) {
+        for (const char of charactersData) {
             const allCharacters = await Character.findOne({
                 name: char.name,
-                movie: char.movie
             });
             
             if (!allCharacters){
-                await characters.create(char);
+                await Character.create(char);
             }
             else {
                 console.log("El personaje que intentas crear ya existe")
