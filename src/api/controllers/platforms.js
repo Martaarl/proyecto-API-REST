@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const Platforms = require("../models/platforms");
 
 
@@ -39,27 +40,23 @@ const postPlatform = async (req, res, next) => {
 const putPlatform = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const platform = await Platforms.findById(id);
-
-        if (!platform) {
-            return res.status(400).json({error: "Platform not found"})
-        }
-        
-       platform.name = req.body.name || platform.name;
-       platform.image = req.body.image || platform.image;
-
-        if(req.body.characters && Array.isArray(req.body.characters)){
-            req.body.characters.forEach(char => {
-                if (!platform.characters.includes(char)) {
-                    platform.characters.push(char)
-                }
-            });
+        const updateData = {
+            name : req.body.name ,
+            image : req.body.image 
         }
 
-        const platformsUpdated = await platform.save();
-        return res.status(200).json(platformsUpdated);
+         if(req.body.characters && Array.isArray(req.body.characters)){
+            updateData.$addToSet = {characters: {$each: req.body.characters}}
+            };
+
+        const updatePlatform = await Platforms.findByIdAndUpdate(id, updateData, {new: true, runValidators: true});
+
+        if (!updatePlatform) {
+            return res.status(404).json({error: "Plataforma no encontrada"})
+        }
+        return res.status(200).json(updatePlatform);
     } catch (error) {
-        return res.status(400).json({error: "error updating"});
+        return res.status(500).json({error: "error actualizando la plataforma", details: error});
     }
 }
 
@@ -67,8 +64,18 @@ const putPlatform = async (req, res, next) => {
 const deletePlatform = async (req, res, next) => {
     try {
        const {id} = req.params;
+
+       if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({error: "ID inválido"})
+       }
        const platformsDeleted = await Platforms.findByIdAndDelete(id);
+
+      if (!platformsDeleted) { 
+        return res.status(404).json({error: "Platform not found"})
+        }
+
        return res.status(200).json(platformsDeleted);
+    
     } catch (error) {
         return res.status(400).json({error: error.message})
     }

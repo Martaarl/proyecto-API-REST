@@ -61,7 +61,7 @@ const putCharacters = async (req, res, next) => {
             return res.status(400).json({error: "Character not found"})
         }
 
-        character.name= req.body || character.name;
+        character.name = req.body.name || character.name;
         character.image = req.body.image || character.image;
         character.movie = req.body.movie || character.movie;
         character.category = req.body.category || character.category;

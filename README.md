@@ -1,79 +1,193 @@
-# 📽️ API REST PROJECT - Platforms & Characters
+# 🎶 Proyecto 7 – API REST de Música (Users, Artists & Albums)
 
-## _This project is a REST API built with Node.js, Express and MongoDB._ 
-### It allows managing streaming platforms and their characters.
+API REST construida con **Express**, **MongoDB** y **Mongoose**. Permite gestionar **usuarios**, **artistas** y **álbumes** con roles de usuario (admin y user) y autenticación mediante **JWT** y control de acceso por **roles**.
+___
+## 🧩 Funcionalidades principales
 
-## 🤖 TECHNOLOGIES USED
-- [node.js] - evented I/O for the backend
-- [Express] - fast node.js network app framework 
-- [MongoDB Atlas] - NoSQL database with json
-- [Mongoose] - node.js library
-- [CORS] - allows the request from different origins
+✅ Registro y login de usuarios con contraseñas encriptadas  
+✅ Autenticación mediante token JWT  
+✅ Roles de usuario (`user`, `admin`)  
+✅ Control de acceso mediante middlewares  
+✅ CRUD completo para `users`, `artists` y `albums`  
+✅ Relación entre colecciones (`Artist` ↔ `Album`)  
+✅ Base de datos en **MongoDB Atlas**  
+✅ Endpoint de **seed** para precargar datos
 
-## 📒 STRUCTURE
-  > node_modules
-  > proyecto6frontend
-  > public
-  > src
-  - api
-  - config
-  - data
-  >utils
-   - seeds
-  >.env
-  index.js
-  package-lock.json
-  package.json
-  
-## 🔋 INSTALATION
-1. Clone the repository
- ```sh
-git clone https://github.com/Martaarl/proyecto-API-REST.git
-cd proyecto-API-REST
-```
-2. Install dependencies
-```sh
-npm install
-```
-3. Set up environment variables
-```sh
-DB_URL=your_mongodb_connection_string
-PORT=3000
-```
-4. Run the server
-```sh
-node index.js
-```
-5. Optional: seed the database
-```sh
-node utils/seeds/movies.seed.js
-```
-This API should now be running at: 
-```sh
-http://localhost:3000
-```
-## 🔗 ENDPOINTS
-#### CHARACTERS
-```GET ```| */api/characters* - get all characters
-```GET``` */api/characters/:id* - get a characters by ID
-```POST``` */api/characters* - create a new character
-```PUT``` */api/character/:id* - update and existing character
-```DELETE``` */api/characters/:id* - delete a character
+## 🚀 Tecnologías utilizadas
 
-#### PLATFORMS
-``` GET ```*/api/platforms* - get all platforms
-```GET``` */api/platforms/:id* - get a platforms by ID
-```POST``` */api/platforms* - create a new platform
-```PUT``` */api/platforms/:id* - update and existing platform
-```DELETE``` */api/platforms/:id* - delete a platform
+- **Node.js** + **Express**
+- **MongoDB** + **Mongoose**
+- **JWT (Json Web Token)**
+- **Bcrypt** (para encriptar contraseñas)
+- **dotenv** (variables de entorno)
+- **CORS**
+- **Nodemon** (entorno de desarrollo)
+___
 
-### 🌱 SEED
-The project includes a seed script to populate the data base with initial characters.
-run: node/utils/seeds/movies.seed.js
+## 📁 Estructura del proyecto
+src/
+ ├─ api/
+     ├─ controllers/
+     ├─ models/
+     └─ routes/
+ ├─ config/
+     └─ db.js
+     └─  jwt.js
+ ├─ middlewares/
+     └─ auth.js
+ └─ utils
+     └─ seeds.js
+.env
+index.js
+package.json
+___
 
-### ✅ 
-Full crud for characters and platforms
-Relationship between collections
-When updating platforms, existing characters are not removed
-Prevents duplicate entries in related arrays
-Includes a seed script to easily populate database
+## ⚡️ Instalación
+1. Clonar el repositorio:
+```bash
+git clone <URL_DEL_REPOSITORIO>
+```
+2. Instalar dependencias:
+```bash
+npm install 
+```
+3. Crear un archivo .env con las siguientes variables:
+```bash
+DB_URL=<TU_URL_DE_MONGODB>
+JWT_SECRET=<TU_SECRETO_JWT>
+```
+4. ejecutar el servidor:
+```bash
+npm run dev
+```
+Servidor corriendo en: http://localhost:3000
+___
+## 🔐 Roles y permisos
+* User
+    *   Puede registrarse y autenticarse.
+    * Puede ver artistas, álbumes y su propio perfil.
+    * Puede eliminar su propia cuenta.
+* Admin
+    * Puede ver, crear, modificar y eliminar cualquier usuario.
+    * Puede cambiar el rol de un usuario a “admin”.
+    * Puede crear, modificar y eliminar artistas y álbumes.
+___
+## 🔑 Autenticación
+* Todos los endpoints sensibles requieren token JWT.
+* Middleware isAuth valida token.
+* Middleware isAdmin valida que el usuario sea administrador.
+___
+## MODELOS
+### User
+- `userName`: String, obligatorio
+- `password`: String, obligatorio
+- `rol`: String, enum ["user","admin"], default "user"
+- `favoriteAlbums`: Array<ObjectId>, ref `Album`
+- timestamps: true
+
+### Artist
+- `name`: String, obligatorio
+- `image`: String
+- `genre`: String, enum ["pop","rock","hip-hop","jazz","electronic","classical"], obligatorio
+- `albums`: Array<ObjectId>, ref `Album`
+- timestamps: true
+
+### Album
+- `title`: String, obligatorio
+- `year`: Number
+- `image`: String
+- `artist`: Array<ObjectId>, ref `Artist`, obligatorio
+- timestamps: true
+
+## ✅ ENDPOITNS
+###  ✋ Users (`/api/users`)
+
+| **Método** | **Endpoint** | **Descripción** | **Autenticación** |
+|-------------|---------------|------------------|-------------------|
+| **POST** | `/register` | Registro de usuario (solo se crea con rol `"user"`) | ❌ |
+| **POST** | `/login` | Login y obtención de token JWT | ❌ |
+| **GET** | `/` | Obtener todos los usuarios | ✅ (Admin) |
+| **GET** | `/:userName` | Obtener usuario por nombre | ✅ (Admin o el propio usuario) |
+| **DELETE** | `/:userName` | Eliminar usuario | ✅ (Admin o el propio usuario) |
+
+#### 🧾 Ejemplo de cuerpo para registro
+
+```json
+{
+  "userName": "marta",
+  "password": "admin123"
+}
+````
+⚠️ El primer admin se crea directamente en la base de datos, los usuarios normales siempre con rol user.
+
+### Artistas
+### 🎤 Artistas (`/api/artists`)
+
+| **Método** | **Endpoint** | **Descripción** | **Autenticación** |
+|-------------|---------------|------------------|-------------------|
+| **GET** | `/` | Obtener todos los artistas | ❌ |
+| **GET** | `/:id` | Obtener artista por ID | ❌ |
+| **POST** | `/` | Crear nuevo artista | ✅ (Admin) |
+| **PUT** | `/:id` | Actualizar artista existente | ✅ (Admin) |
+| **DELETE** | `/:id` | Eliminar artista | ✅ (Admin) |
+
+#### 📘 Ejemplo de cuerpo para crear un artista
+
+```json
+{
+  "name": "Amy Winehouse",
+  "genre": "Soul / Jazz",
+  "country": "Reino Unido"
+}
+```
+### 💿 Álbumes (`/api/albums`)
+
+| **Método** | **Endpoint** | **Descripción** | **Autenticación** |
+|-------------|--------------|------------------|-------------------|
+| **GET** | `/` | Obtener todos los álbumes | ❌ |
+| **GET** | `/:id` | Obtener álbum por ID | ❌ |
+| **POST** | `/` | Crear nuevo álbum | ✅ (Admin) |
+| **PUT** | `/:id` | Actualizar álbum existente | ✅ (Admin) |
+| **DELETE** | `/:id` | Eliminar álbum | ✅ (Admin) |
+
+#### 🧾 Ejemplo de cuerpo para crear un álbum
+
+```json
+{
+  "title": "A Rush of Blood to the Head",
+  "artist": "Coldplay",
+  "year": 2002,
+  "genre": "Alternative Rock",
+  "cover": "https://upload.wikimedia.org/wikipedia/en/2/29/Coldplay_-_A_Rush_of_Blood_to_the_Head.jpg"
+}
+```
+___
+
+## 🌱Semilla (Seed)
+
+Semilla para cargar datos iniciales de álbumes (y/o artistas) en la base de datos si no existen previamente.
+```bash
+node src/utils/seeds.js
+```
+___
+## 🔗 Relaciones entre colecciones
+
+- Usuario ↔ Álbum: favoritos (favoriteAlbums)
+- Álbum ↔ Artista: varios artistas por álbum
+- Artista ↔ Álbum: varios álbumes por artista
+___
+## 🛠️ Uso
+
+1.  Configura .env con la URL de tu base de datos y la clave JWT
+2. Ejecuta npm install
+3. Levanta el servidor: npm run dev
+Prueba los endpoints con Insomnia o Postman
+
+___
+## 👩‍💻 Autor
+**Marta Ramírez Linares**  
+Proyecto desarrollado en **Node.js**, **Express** y **MongoDB** con autenticación **JWT**.  
+
+📧 *Contacto:* *https://github.com/Martaarl*
+
+
